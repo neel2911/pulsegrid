@@ -1,6 +1,9 @@
 
 
+export const PORT = Number(process.env.GATEWAY_PORT) || 8080;
+
 const MAX_CPU_USAGE = 100 // 100%
+
 
 const SERVERS = [{ id: 'node-server-1', totalMemory: 4000, status: "HEALTHY" }, { id: 'node-server-2', totalMemory: 8000, status: "HEALTHY" }, { id: 'node-server-3', totalMemory: 16000, status: "HEALTHY" }] as const
 
