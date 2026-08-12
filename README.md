@@ -1,4 +1,3 @@
-```markdown
 # Pulsar — Real-Time High-Throughput Observability Engine
 
 Pulsar is a real-time system monitoring engine engineered to handle high-frequency telemetry streams without starving the V8 main thread or causing browser layout thrashing. 
@@ -9,36 +8,28 @@ Most web-based monitoring dashboards collapse under spike traffic because they c
 
 ## 🏗 System Architecture
 
-```text
-                                [ PRODUCER NODE ]
-                          (Generates metric ticks @ 5ms–200ms)
-                                        │
-                                        │ (ioredis PUBLISH)
-                                        ▼
-                            [ REDIS PUB/SUB BROKER ]
-                           (Channel: "server-metrics")
-                                        │
-                                        │ (ioredis SUBSCRIBE)
-                                        ▼
-                            [ WEBSOCKET GATEWAY ]
-                        (Global listener, fan-out engine)
-                                        │
-                                        │ (Raw WS Frames @ 200 msg/sec)
-                                        ▼
-                            [ BROWSER INGESTION ]
-                                        │
-                      ┌─────────────────┴─────────────────┐
-                      │  useRef Mutable In-Memory Buffer  │ (No re-renders)
-                      └─────────────────┬─────────────────┘
-                                        │
-                                        │ (Flush every 100ms / 10 FPS)
-                                        ▼
-                        [ REACT STATE & VIRTUAL DOM ]
-          ┌─────────────────────────────┼─────────────────────────────┐
-          ▼                             ▼                             ▼
-    [ KPI Aggregates ]         [ CPU Area Chart ]         [ Virtualized Log Stream ]
-(Latest node state map)     (Recharts, no anim CSS)      (~15 mounted DOM nodes)
+```mermaid
+flowchart TD
+    Producer["<b>PRODUCER NODE</b><br/><i>(Generates metric ticks @ 5ms–200ms)</i>"]
+    Redis["<b>REDIS PUB/SUB BROKER</b><br/><i>(Channel: 'server-metrics')</i>"]
+    Gateway["<b>WEBSOCKET GATEWAY</b><br/><i>(Global listener, fan-out engine)</i>"]
+    Browser["<b>BROWSER INGESTION</b>"]
+    Buffer["<b>useRef Mutable In-Memory Buffer</b><br/><i>(No re-renders)</i>"]
+    ReactDOM["<b>REACT STATE & VIRTUAL DOM</b>"]
+    
+    KPI["<b>KPI Aggregates</b><br/><i>(Latest node state map)</i>"]
+    Chart["<b>CPU Area Chart</b><br/><i>(Recharts, no anim CSS)</i>"]
+    Stream["<b>Virtualized Log Stream</b><br/><i>(~15 mounted DOM nodes)</i>"]
 
+    Producer -- "(ioredis PUBLISH)" --> Redis
+    Redis -- "(ioredis SUBSCRIBE)" --> Gateway
+    Gateway -- "(Raw WS Frames @ 200 msg/sec)" --> Browser
+    Browser --> Buffer
+    Buffer -- "(Flush every 100ms / 10 FPS)" --> ReactDOM
+    
+    ReactDOM --> KPI
+    ReactDOM --> Chart
+    ReactDOM --> Stream
 ```
 
 ---
@@ -139,7 +130,3 @@ pnpm dev
 ```
 
 Open `http://localhost:5173` in your browser to inspect the live engine.
-
-```
-
-```
