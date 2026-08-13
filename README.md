@@ -6,6 +6,17 @@ Most web-based monitoring dashboards collapse under spike traffic because they c
 
 ---
 
+## 🎥 Live Engine Demo
+
+<div align="center">
+  <video src="https://github.com/user-attachments/assets/89ce57c7-2158-4d07-94b2-239389ba61aa" controls="controls" width="100%">
+    Your browser does not support the video tag.
+  </video>
+  <p><i>Live demonstration of 200 msg/sec Spike Mode rendering at 60 FPS with zero frame drops.</i></p>
+</div>
+
+---
+
 ## 🏗 System Architecture
 
 ```mermaid
